@@ -1,0 +1,21 @@
+ Import the functions you need from the SDKs you need
+import { initializeApp } from firebaseapp;
+import { getAnalytics } from firebaseanalytics;
+ TODO Add SDKs for Firebase products that you want to use
+ httpsfirebase.google.comdocswebsetup#available-libraries
+
+ Your web app's Firebase configuration
+ For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey AIzaSyCSb61GQkTcYHUkVnPEu_Yl6M-zAqYUoxY,
+  authDomain controle-entregas-c461d.firebaseapp.com,
+  projectId controle-entregas-c461d,
+  storageBucket controle-entregas-c461d.firebasestorage.app,
+  messagingSenderId 990745979036,
+  appId 1990745979036web7ef20d15e7e042fb1ea559,
+  measurementId G-9Y2PHN3L4F
+};
+
+ Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);

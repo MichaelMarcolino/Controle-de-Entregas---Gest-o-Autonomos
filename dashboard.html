@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCGE - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Scripts oficiais do Firebase (Compat - funcionam em qualquer ambiente) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+</head>
+<body class="bg-gradient">
+
+    <header class="main-header">
+        <div class="logo">
+            <h1>Controle de Entregas</h1>
+            <p>Painel de Gestão e Rotas</p>
+        </div>
+        <button class="botao-sair" id="btn-sair">SAIR</button>
+    </header>
+
+    <main class="dashboard-container">
+        
+        <!-- NAVEGAÇÃO INTERNA -->
+        <div class="dashboard-tabs reveal">
+            <button type="button" class="tab-btn active" id="tab-lancamentos">Lançamentos de Hoje</button>
+            <button type="button" class="tab-btn" id="tab-historico">Consultar Histórico</button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ABA 1: LANÇAMENTOS DO DIA                  -->
+        <!-- ========================================== -->
+        <section id="view-lancamentos" class="dashboard-view active">
+            
+            <div class="avatar-header reveal">
+                <div style="font-size: 2.8rem; background: rgba(99, 102, 241, 0.2); border-radius: 18px; padding: 0.5rem 0.8rem;">
+                    🏍️
+                </div>  
+                <div>
+                    <h2 class="dashboard-title">Lançamentos de Hoje</h2>
+                    <p style="color: #94a3b8; font-size: 0.85rem; margin-top: 4px;">Anote suas corridas e gastos em tempo real</p>
+                </div>
+            </div>
+
+            <div class="grid-container">
+                <!-- Bloco: Entregas -->
+                <div class="section-box reveal">
+                    <div class="section-header">
+                        <span class="section-title">Entregas - Rotas</span>
+                        <span style="font-size: 0.75rem; color: #34d399; font-weight: 700; background: rgba(52, 211, 153, 0.1); padding: 2px 8px; border-radius: 6px;">Entrada (+)</span>
+                    </div>
+                    <form id="form-entregas">
+                        <input type="text" id="bairro" placeholder="Bairro / Destino" required>
+                        <input type="number" id="taxa" placeholder="Valor da Taxa (R$)" step="0.01" min="0" required>
+                        <button type="submit" class="btn-submit">+ Adicionar Rota</button>
+                    </form>
+                </div>
+
+                <!-- Bloco: Gastos -->
+                <div class="section-box reveal">
+                    <div class="section-header">
+                        <span class="section-title">Gastos do dia</span>
+                        <span style="font-size: 0.75rem; color: #f87171; font-weight: 700; background: rgba(248, 113, 113, 0.1); padding: 2px 8px; border-radius: 6px;">Saída (-)</span>
+                    </div>
+                    <form id="form-gastos">
+                        <input type="text" id="descricao" placeholder="Descrição do Gasto (ex: Gasolina)" required>
+                        <input type="number" id="valor-gasto" placeholder="Valor (R$)" step="0.01" min="0" required>
+                        <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, #e11d48, #f59e0b);">- Adicionar Gasto</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- ABA 2: HISTÓRICO                           -->
+        <!-- ========================================== -->
+        <section id="view-historico" class="dashboard-view" style="display: none;">
+            
+            <div class="header-historico">
+                <h2>Histórico de Lançamentos</h2>
+            </div>
+
+            <!-- Barra de Filtros com Data Inicial e Final -->
+            <div class="filtro-historico-container">
+                <div class="filtro-grupo">
+                    <label>De:</label>
+                    <input type="date" id="filtro-data-inicio" class="input-data-custom">
+                </div>
+                <div class="filtro-grupo">
+                    <label>Até:</label>
+                    <input type="date" id="filtro-data-fim" class="input-data-custom">
+                </div>
+
+                <div class="botoes-filtro">
+                    <button type="button" id="btn-hoje" class="btn-filtro">Hoje</button>
+                    <button type="button" id="btn-esta-semana" class="btn-filtro">Esta Semana</button>
+                    <button type="button" id="btn-este-mes" class="btn-filtro">Este Mês</button>
+                </div>
+            </div>
+
+            <div class="grid-container">
+                <!-- Card Rotas -->
+                <div class="section-box">
+                    <div class="section-header">
+                        <span class="section-title">Rotas Realizadas</span>
+                    </div>
+                    <ul id="lista-historico-rotas" class="lista-historico">
+                        <li style="text-align:center; padding: 20px; color: #94a3b8;">Nenhuma rota cadastrada neste período.</li>
+                    </ul>
+                </div>
+
+                <!-- Card Gastos -->
+                <div class="section-box">
+                    <div class="section-header">
+                        <span class="section-title">Gastos Registrados</span>
+                    </div>
+                    <ul id="lista-historico-gastos" class="lista-historico">
+                        <li style="text-align:center; padding: 20px; color: #94a3b8;">Nenhum gasto cadastrado neste período.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Resumo -->
+            <div class="section-box" style="margin-top: 20px;">
+                <div class="section-header">
+                    <span class="section-title">Resumo Geral</span>
+                </div>
+                <div id="resumo-valores" style="padding: 5px;">
+                    🔄 Calculando...
+                </div>
+            </div>
+
+            <!-- Botão Voltar Corretamente Posicionado -->
+            <div class="container-voltar">
+                <button type="button" id="btn-voltar-hoje" class="btn-voltar-lancamentos">
+                    Voltar para Lançamentos
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="js/app.js"></script>
+    <script src="js/animations.js"></script>
+    
+</body>
+</html>

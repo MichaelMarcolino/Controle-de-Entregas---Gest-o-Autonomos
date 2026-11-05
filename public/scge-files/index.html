@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCGE - Login e Cadastro</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient">
+
+    <header class="main-header">
+        <div class="logo">
+            <h1>Um portal de soluções</h1>
+            <p>Aqui você, anota, cria e gerencia</p>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn-nav active" id="btn-login">Login</button>
+            <button class="btn-nav" id="btn-cadastro">Cadastre-se</button>
+        </div>
+    </header>
+
+    <!-- CONTAINER PRINCIPAL DO PALCO -->
+    <main class="main-stage">
+        
+        <!-- LADO ESQUERDO: Card Anote -->
+        <div class="stage-side">
+            <div class="visual-card floating-anim" style="--delay: 0s;">
+                <div class="icon-placeholder" style="background-color: #c8a2c8;">
+                    <span class="emoji-icon">📝</span>
+                </div>
+                <h3>Anote!</h3>
+            </div>
+        </div>
+
+        <!-- CENTRO: Formulários de Autenticação -->
+        <div class="stage-center">
+            <!-- Formulário de Login -->
+            <div class="auth-card active" id="form-login">
+                <h2>Entrar no Sistema</h2>
+                <form id="login-form">
+                    <input type="email" id="email" placeholder="E-mail" required>
+                    <input type="password" id="password" placeholder="Senha" required>
+                    <a href="#" id="btn-esqueci-senha" class="link-esqueci">Esqueci minha senha</a>
+                    <button type="button" id="btn-entrar" class="btn-submit">Acessar</button>
+                </form>
+            </div>
+
+            <!-- Formulário de Cadastro -->
+            <div class="auth-card" id="form-cadastro">
+                <h2>Criar Conta</h2>
+                <form id="cadastro-form">
+                    <input type="email" id="email-cadastro" placeholder="E-mail" required>
+                    <input type="password" id="password-cadastro" placeholder="Senha (mínimo 6 dígitos)" required>
+                    <button type="button" id="btn-criar-conta" class="btn-submit">Cadastrar</button>
+                </form>
+            </div>
+
+            <!-- Formulário de Recuperação de Senha -->
+            <div class="auth-card" id="form-recuperar">
+                <h2>Recuperar Senha</h2>
+                <form id="recuperar-form">
+                    <input type="email" id="email-recuperar" placeholder="E-mail cadastrado" required>
+                    <button type="button" id="btn-enviar-recuperacao" class="btn-submit">Enviar Link</button>
+                    <a href="#" id="btn-voltar-login" class="link-esqueci" style="text-align: center; margin-top: 1rem;">Voltar para o Login</a>
+                </form>
+            </div>
+        </div>
+
+        <!-- LADO DIREITO: Card Gerencie -->
+        <div class="stage-side">
+            <div class="visual-card floating-anim" style="--delay: 1.5s;">
+                <div class="icon-placeholder" style="background-color: #93c5fd;">
+                    <span class="emoji-icon">☁️</span>
+                </div>
+                <h3>Gerencie & Controle</h3>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module" src="js/auth.js"></script>
+    <script src="js/animations.js"></script>
+</body>
+</html>

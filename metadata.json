@@ -1,0 +1,6 @@
+{
+  "name": "SCGE - Controle e Gestão de Entregas",
+  "description": "Sistema completo para entregadores e motoboys: lançamentos de rotas, controle de gastos do dia, histórico detalhado e cálculo de lucro.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
