@@ -422,12 +422,10 @@ input:focus, select:focus {
 
 .btn-excluir:hover { color: #f43f5e; }
 
-/* ==========================================
-   RESUMO GERAL
-   ========================================== */
+/* RESUMO GERAL */
 .resumo-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
@@ -435,7 +433,7 @@ input:focus, select:focus {
   background: #090d16;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  padding: 1.1rem;
+  padding: 1rem;
   text-align: center;
 }
 
@@ -448,7 +446,20 @@ input:focus, select:focus {
   margin-bottom: 0.35rem;
 }
 
-.resumo-card h4 { font-size: 1.35rem; font-weight: 900; }
+.resumo-card h4 { font-size: 1.25rem; font-weight: 900; }
+
+/* Adicionando responsividade para a nova grade */
+@media (max-width: 768px) {
+  .resumo-grid {
+    grid-template-columns: 1fr 1fr; /* No celular fica 2 colunas */
+  }
+}
+
+@media (max-width: 450px) {
+  .resumo-grid {
+    grid-template-columns: 1fr; /* Em telas muito pequenas, 1 coluna */
+  }
+}
 
 /* ==========================================
    BARRA DE FILTRO DO HISTÓRICO

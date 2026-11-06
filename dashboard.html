@@ -81,9 +81,7 @@
                 </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- ABA 2: HISTÓRICO                           -->
-        <!-- ========================================== -->
+               <!-- ABA 2: HISTÓRICO -->
         <section id="view-historico" class="dashboard-view" style="display: none;">
             
             <div class="header-historico">
@@ -111,22 +109,32 @@
             <div class="grid-container">
                 <!-- Card Rotas -->
                 <div class="section-box">
-                    <div class="section-header">
+                    <!-- Cabeçalho clicável (Sanfona) -->
+                    <div class="section-header" id="header-rotas" style="cursor: pointer;">
                         <span class="section-title">Rotas Realizadas</span>
+                        <span id="icone-rotas">▼</span>
                     </div>
-                    <ul id="lista-historico-rotas" class="lista-historico">
-                        <li style="text-align:center; padding: 20px; color: #94a3b8;">Nenhuma rota cadastrada neste período.</li>
-                    </ul>
+                    <!-- Div que será escondida/mostrada -->
+                    <div id="conteudo-rotas">
+                        <ul id="lista-historico-rotas" class="lista-historico">
+                            <li style="text-align:center; padding: 20px; color: #94a3b8;">Nenhuma rota cadastrada neste período.</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <!-- Card Gastos -->
                 <div class="section-box">
-                    <div class="section-header">
+                    <!-- Cabeçalho clicável (Sanfona) -->
+                    <div class="section-header" id="header-gastos" style="cursor: pointer;">
                         <span class="section-title">Gastos Registrados</span>
+                        <span id="icone-gastos">▼</span>
                     </div>
-                    <ul id="lista-historico-gastos" class="lista-historico">
-                        <li style="text-align:center; padding: 20px; color: #94a3b8;">Nenhum gasto cadastrado neste período.</li>
-                    </ul>
+                    <!-- Div que será escondida/mostrada -->
+                    <div id="conteudo-gastos">
+                        <ul id="lista-historico-gastos" class="lista-historico">
+                            <li style="text-align:center; padding: 20px; color: #94a3b8;">Nenhum gasto cadastrado neste período.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -135,12 +143,13 @@
                 <div class="section-header">
                     <span class="section-title">Resumo Geral</span>
                 </div>
+                <!-- Onde os valores serão injetados pelo JS -->
                 <div id="resumo-valores" style="padding: 5px;">
                     🔄 Calculando...
                 </div>
             </div>
 
-            <!-- Botão Voltar Corretamente Posicionado -->
+            <!-- Botão Voltar -->
             <div class="container-voltar">
                 <button type="button" id="btn-voltar-hoje" class="btn-voltar-lancamentos">
                     Voltar para Lançamentos
