@@ -54,6 +54,9 @@
                         <span style="font-size: 0.75rem; color: #34d399; font-weight: 700; background: rgba(52, 211, 153, 0.1); padding: 2px 8px; border-radius: 6px;">Entrada (+)</span>
                     </div>
                     <form id="form-entregas">
+                        <label for="data-entrega" style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 5px; display: block;">Data da Entrega:</label>
+                        <input type="date" id="data-entrega" required style="margin-bottom: 1rem;">
+                        
                         <input type="text" id="bairro" placeholder="Bairro / Destino" required>
                         <input type="number" id="taxa" placeholder="Valor da Taxa (R$)" step="0.01" min="0" required>
                         <button type="submit" class="btn-submit">+ Adicionar Rota</button>
@@ -66,13 +69,16 @@
                         <span class="section-title">Gastos do dia</span>
                         <span style="font-size: 0.75rem; color: #f87171; font-weight: 700; background: rgba(248, 113, 113, 0.1); padding: 2px 8px; border-radius: 6px;">Saída (-)</span>
                     </div>
+                    
                     <form id="form-gastos">
+                        <label for="data-gasto" style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 5px; display: block;">Data do Gasto:</label>
+                        <input type="date" id="data-gasto" required style="margin-bottom: 1rem;">
+
                         <input type="text" id="descricao" placeholder="Descrição do Gasto (ex: Gasolina)" required>
                         <input type="number" id="valor-gasto" placeholder="Valor (R$)" step="0.01" min="0" required>
                         <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, #e11d48, #f59e0b);">- Adicionar Gasto</button>
                     </form>
                 </div>
-            </div>
         </section>
 
         <!-- ========================================== -->

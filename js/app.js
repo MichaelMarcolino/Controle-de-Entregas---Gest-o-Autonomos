@@ -1,8 +1,8 @@
-// Módulo do Dashboard universal (funciona com ou sem servidor web)
+// Módulo do Dashboard universal
 document.addEventListener('DOMContentLoaded', () => {
   const isFileProtocol = window.location.protocol === 'file:';
 
-  // Formatação monetária
+  // --- UTILITÁRIOS ---
   function formatarMoeda(valor) {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
   }
@@ -17,14 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   }
 
-  // Formata objeto Date para string YYYY-MM-DD (evitando problemas de fuso horário)
   function formatDateToInput(date) {
     const offset = date.getTimezoneOffset();
     const adjustedDate = new Date(date.getTime() - (offset * 60 * 1000));
     return adjustedDate.toISOString().split('T')[0];
   }
 
-  // Elementos do DOM
+  // --- ELEMENTOS DO DOM ---
   const btnSair = document.getElementById('btn-sair');
   const tabLancamentos = document.getElementById('tab-lancamentos');
   const tabHistorico = document.getElementById('tab-historico');
@@ -39,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const listaGastos = document.getElementById('lista-historico-gastos');
   const resumoValores = document.getElementById('resumo-valores');
 
-  // Elementos do filtro de data
   const filtroDataInicio = document.getElementById('filtro-data-inicio');
   const filtroDataFim = document.getElementById('filtro-data-fim');
   
@@ -47,14 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnEstaSemana = document.getElementById('btn-esta-semana');
   const btnEsteMes = document.getElementById('btn-este-mes');
 
-  // Estado
+  // --- ESTADO ---
   let rotas = [];
   let gastos = [];
   let usuarioId = 'local_user';
 
-  // =========================================================================
-  // 1. BOTÃO SAIR
-  // =========================================================================
+  // --- 1. BOTÃO SAIR ---
   if (btnSair) {
     btnSair.addEventListener('click', async (e) => {
       e.preventDefault();
@@ -72,9 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // =========================================================================
-  // 2. NAVEGAÇÃO ENTRE ABAS
-  // =========================================================================
+  // --- 2. NAVEGAÇÃO ENTRE ABAS ---
   function alternarAba(aba) {
     if (aba === 'lancamentos') {
       if (tabLancamentos) tabLancamentos.classList.add('active');
@@ -87,13 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (viewLancamentos) viewLancamentos.style.display = 'none';
       if (viewHistorico) viewHistorico.style.display = 'block';
       
-      // Se os campos estiverem vazios, preenche com o dia de hoje
-      if (filtroDataInicio && !filtroDataInicio.value) {
-        filtroDataInicio.value = getDataHoje();
-      }
-      if (filtroDataFim && !filtroDataFim.value) {
-        filtroDataFim.value = getDataHoje();
-      }
+      if (filtroDataInicio && !filtroDataInicio.value) filtroDataInicio.value = getDataHoje();
+      if (filtroDataFim && !filtroDataFim.value) filtroDataFim.value = getDataHoje();
+      
       renderizarHistorico();
     }
   }
@@ -102,13 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (tabHistorico) tabHistorico.addEventListener('click', (e) => { e.preventDefault(); alternarAba('historico'); });
   if (btnVoltarHoje) btnVoltarHoje.addEventListener('click', (e) => { e.preventDefault(); alternarAba('lancamentos'); });
 
-  // Eventos de mudança manual nos inputs de data
   if (filtroDataInicio) filtroDataInicio.addEventListener('change', renderizarHistorico);
   if (filtroDataFim) filtroDataFim.addEventListener('change', renderizarHistorico);
 
-  // =========================================================================
-  // 3. LÓGICA DOS BOTÕES DE FILTRO RÁPIDO
-  // =========================================================================
+  // --- 3. LÓGICA DOS BOTÕES DE FILTRO RÁPIDO ---
   if (btnHoje) {
     btnHoje.addEventListener('click', (e) => {
       e.preventDefault();
@@ -123,13 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
     btnEstaSemana.addEventListener('click', (e) => {
       e.preventDefault();
       const hoje = new Date();
-      const diaDaSemana = hoje.getDay(); // 0 = Domingo
+      const diaDaSemana = hoje.getDay();
       
       const inicioSemana = new Date(hoje);
       inicioSemana.setDate(hoje.getDate() - diaDaSemana);
       
       const fimSemana = new Date(hoje);
-      fimSemana.setDate(hoje.getDate() + (6 - diaDaSemana)); // Sábado
+      fimSemana.setDate(hoje.getDate() + (6 - diaDaSemana));
 
       if (filtroDataInicio) filtroDataInicio.value = formatDateToInput(inicioSemana);
       if (filtroDataFim) filtroDataFim.value = formatDateToInput(fimSemana);
@@ -150,9 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // =========================================================================
-  // 4. ARMAZENAMENTO LOCAL RESILIENTE
-  // =========================================================================
+  // --- 4. ARMAZENAMENTO LOCAL ---
   function getStorageKey(prefix) {
     return `scge_${prefix}_${usuarioId}`;
   }
@@ -160,25 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function carregarCacheLocal() {
     try {
       const rotasCache = localStorage.getItem(getStorageKey('rotas'));
-      if (rotasCache) {
-        rotas = JSON.parse(rotasCache);
-      } else if (rotas.length === 0) {
-        rotas = [
-          { id: '1', bairro: 'Centro - Rua das Flores', taxa: 15.00, data: getDataHoje(), horario: '11:30' },
-          { id: '2', bairro: 'Jardim América', taxa: 18.50, data: getDataHoje(), horario: '12:15' }
-        ];
-        salvarCacheLocal();
-      }
+      if (rotasCache) rotas = JSON.parse(rotasCache);
 
       const gastosCache = localStorage.getItem(getStorageKey('gastos'));
-      if (gastosCache) {
-        gastos = JSON.parse(gastosCache);
-      } else if (gastos.length === 0) {
-        gastos = [
-          { id: 'g1', descricao: 'Gasolina', valor: 25.00, data: getDataHoje(), horario: '10:00' }
-        ];
-        salvarCacheLocal();
-      }
+      if (gastosCache) gastos = JSON.parse(gastosCache);
     } catch (e) {
       console.warn('Erro ao carregar cache local:', e);
     }
@@ -193,29 +163,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // =========================================================================
-  // 5. RENDERIZAR HISTÓRICO E RESUMO GERAL (FILTRO DE INTERVALO)
-  // =========================================================================
+  // --- 5. RENDERIZAR HISTÓRICO ---
   function renderizarHistorico() {
     if (!listaRotas || !listaGastos || !resumoValores) return;
 
     const strInicio = filtroDataInicio && filtroDataInicio.value ? filtroDataInicio.value : getDataHoje();
     const strFim = filtroDataFim && filtroDataFim.value ? filtroDataFim.value : getDataHoje();
 
-    // Converte strings "YYYY-MM-DD" para timestamps para comparação segura
     const dataInicioTime = new Date(strInicio + 'T00:00:00').getTime();
     const dataFimTime = new Date(strFim + 'T23:59:59').getTime();
 
     const rotasFiltradas = rotas.filter(r => {
       if(!r.data) return false;
-      const tempoItem = new Date(r.data + 'T12:00:00').getTime();
-      return tempoItem >= dataInicioTime && tempoItem <= dataFimTime;
+      return new Date(r.data + 'T12:00:00').getTime() >= dataInicioTime && new Date(r.data + 'T12:00:00').getTime() <= dataFimTime;
     });
 
     const gastosFiltrados = gastos.filter(g => {
       if(!g.data) return false;
-      const tempoItem = new Date(g.data + 'T12:00:00').getTime();
-      return tempoItem >= dataInicioTime && tempoItem <= dataFimTime;
+      return new Date(g.data + 'T12:00:00').getTime() >= dataInicioTime && new Date(g.data + 'T12:00:00').getTime() <= dataFimTime;
     });
 
     // Renderiza Rotas
@@ -230,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div class="item-valor">
             <span class="valor-positivo">+${formatarMoeda(r.taxa)}</span>
-            <button class="btn-excluir" onclick="window.excluirRota('${r.id}')" title="Excluir rota">🗑️</button>
+            <button class="btn-excluir" onclick="window.excluirRota('${r.id}')">🗑️</button>
           </div>
         </li>
       `).join('');
@@ -248,13 +213,13 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div class="item-valor">
             <span class="valor-negativo">-${formatarMoeda(g.valor)}</span>
-            <button class="btn-excluir" onclick="window.excluirGasto('${g.id}')" title="Excluir gasto">🗑️</button>
+            <button class="btn-excluir" onclick="window.excluirGasto('${g.id}')">🗑️</button>
           </div>
         </li>
       `).join('');
     }
 
-    // Cálculos do Resumo
+    // Resumo
     const totalFaturado = rotasFiltradas.reduce((acc, r) => acc + (parseFloat(r.taxa) || 0), 0);
     const totalGastos = gastosFiltrados.reduce((acc, g) => acc + (parseFloat(g.valor) || 0), 0);
     const saldoLiquido = totalFaturado - totalGastos;
@@ -263,64 +228,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resumoValores.innerHTML = `
       <div class="resumo-grid">
-        <div class="resumo-card">
-          <span>Total Faturado</span>
-          <h4 style="color: #34d399;">${formatarMoeda(totalFaturado)}</h4>
-        </div>
-        <div class="resumo-card">
-          <span>Total de Gastos</span>
-          <h4 style="color: #f87171;">${formatarMoeda(totalGastos)}</h4>
-        </div>
-        <div class="resumo-card">
-          <span>Saldo Líquido</span>
-          <h4 style="color: ${saldoLiquido >= 0 ? '#38bdf8' : '#f87171'};">${formatarMoeda(saldoLiquido)}</h4>
-        </div>
-        <div class="resumo-card">
-          <span>Média p/ Rota</span>
-          <h4 style="color: #fbbf24;">${formatarMoeda(mediaPorRota)}</h4>
-        </div>
+        <div class="resumo-card"><span>Total Faturado</span><h4 style="color: #34d399;">${formatarMoeda(totalFaturado)}</h4></div>
+        <div class="resumo-card"><span>Total de Gastos</span><h4 style="color: #f87171;">${formatarMoeda(totalGastos)}</h4></div>
+        <div class="resumo-card"><span>Saldo Líquido</span><h4 style="color: ${saldoLiquido >= 0 ? '#38bdf8' : '#f87171'};">${formatarMoeda(saldoLiquido)}</h4></div>
+        <div class="resumo-card"><span>Média p/ Rota</span><h4 style="color: #fbbf24;">${formatarMoeda(mediaPorRota)}</h4></div>
       </div>
     `;
   }
 
-  window.excluirRota = function(id) {
-    if (confirm('Deseja realmente remover esta rota do histórico?')) {
+  // --- EXCLUSÃO ---
+  window.excluirRota = async function(id) {
+    if (confirm('Deseja realmente remover esta rota?')) {
       rotas = rotas.filter(r => r.id !== id);
       salvarCacheLocal();
       renderizarHistorico();
 
       if (typeof firebase !== 'undefined' && firebase.firestore && usuarioId && !usuarioId.startsWith('local')) {
         try {
-          firebase.firestore().collection('users').doc(usuarioId).collection('rotas').doc(id).delete();
+          await firebase.firestore().collection('users').doc(usuarioId).collection('rotas').doc(id).delete();
         } catch (e) {
-          console.warn('Erro ao deletar no Firestore:', e);
+          console.warn('Erro ao deletar rota no Firestore:', e);
         }
       }
     }
   };
 
-  window.excluirGasto = function(id) {
-    if (confirm('Deseja realmente remover este gasto do histórico?')) {
+  window.excluirGasto = async function(id) {
+    if (confirm('Deseja realmente remover este gasto?')) {
       gastos = gastos.filter(g => g.id !== id);
       salvarCacheLocal();
       renderizarHistorico();
 
       if (typeof firebase !== 'undefined' && firebase.firestore && usuarioId && !usuarioId.startsWith('local')) {
         try {
-          firebase.firestore().collection('users').doc(usuarioId).collection('gastos').doc(id).delete();
+          await firebase.firestore().collection('users').doc(usuarioId).collection('gastos').doc(id).delete();
         } catch (e) {
-          console.warn('Erro ao deletar no Firestore:', e);
+          console.warn('Erro ao deletar gasto no Firestore:', e);
         }
       }
     }
   };
 
-  // =========================================================================
-  // 6. INICIALIZAÇÃO DE SESSÃO COM FIREBASE OU LOCAL
-  // =========================================================================
+  // --- 6. INICIALIZAÇÃO ---
   carregarCacheLocal();
   
-  // Preenche os campos de data com hoje ao abrir a página
   if (filtroDataInicio) filtroDataInicio.value = getDataHoje();
   if (filtroDataFim) filtroDataFim.value = getDataHoje();
   
@@ -344,40 +295,36 @@ document.addEventListener('DOMContentLoaded', () => {
           if (firebase.firestore) {
             const db = firebase.firestore();
 
+            // Escuta Rotas
             db.collection('users').doc(usuarioId).collection('rotas').orderBy('createdAt', 'desc')
               .onSnapshot((snapshot) => {
                 const fsRotas = [];
                 snapshot.forEach(docSnap => fsRotas.push(docSnap.data()));
-                if (fsRotas.length > 0) {
-                  rotas = fsRotas;
-                  salvarCacheLocal();
-                  renderizarHistorico();
-                }
-              }, (err) => console.warn('Firestore rotas:', err));
+                rotas = fsRotas; // Atualiza mesmo se estiver vazio
+                salvarCacheLocal();
+                renderizarHistorico();
+              }, (err) => console.warn('Erro ao buscar rotas:', err));
 
+            // Escuta Gastos
             db.collection('users').doc(usuarioId).collection('gastos').orderBy('createdAt', 'desc')
               .onSnapshot((snapshot) => {
                 const fsGastos = [];
                 snapshot.forEach(docSnap => fsGastos.push(docSnap.data()));
-                if (fsGastos.length > 0) {
-                  gastos = fsGastos;
-                  salvarCacheLocal();
-                  renderizarHistorico();
-                }
-              }, (err) => console.warn('Firestore gastos:', err));
+                gastos = fsGastos; // Atualiza mesmo se estiver vazio
+                salvarCacheLocal();
+                renderizarHistorico();
+              }, (err) => console.warn('Erro ao buscar gastos:', err));
           }
         }
       });
     } catch (e) {
-      console.warn('Auth check:', e);
+      console.warn('Erro no Auth check:', e);
     }
   }
 
-  // =========================================================================
-  // 7. FORMULÁRIO: ADICIONAR ROTA
-  // =========================================================================
+  // --- 7. ADICIONAR ROTA ---
   if (formEntregas) {
-    formEntregas.addEventListener('submit', (e) => {
+    formEntregas.addEventListener('submit', async (e) => { // Adicionado async aqui
       e.preventDefault();
       const bairroInput = document.getElementById('bairro');
       const taxaInput = document.getElementById('taxa');
@@ -399,28 +346,29 @@ document.addEventListener('DOMContentLoaded', () => {
         createdAt: Date.now()
       };
 
+      // Atualiza a tela imediatamente (LocalStorage)
       rotas.unshift(novaRota);
       salvarCacheLocal();
       renderizarHistorico();
-
       bairroInput.value = '';
       taxaInput.value = '';
 
+      // Sincroniza com o Firebase (Se logado)
       if (typeof firebase !== 'undefined' && firebase.firestore && usuarioId && !usuarioId.startsWith('local')) {
         try {
-          firebase.firestore().collection('users').doc(usuarioId).collection('rotas').doc(novaRota.id).set(novaRota);
+          await firebase.firestore().collection('users').doc(usuarioId).collection('rotas').doc(novaRota.id).set(novaRota);
+          console.log("Rota salva na nuvem com sucesso!");
         } catch (err) {
-          console.warn('Aviso ao sincronizar no Firestore:', err);
+          console.error("ERRO AO SALVAR NA NUVEM:", err); // Isso vai mostrar o erro real no console
+          alert("Atenção: Salvo no celular, mas erro ao enviar para nuvem. Erro: " + err.message);
         }
       }
     });
   }
 
-  // =========================================================================
-  // 8. FORMULÁRIO: ADICIONAR GASTO
-  // =========================================================================
+  // --- 8. ADICIONAR GASTO ---
   if (formGastos) {
-    formGastos.addEventListener('submit', (e) => {
+    formGastos.addEventListener('submit', async (e) => { // Adicionado async aqui
       e.preventDefault();
       const descricaoInput = document.getElementById('descricao');
       const valorGastoInput = document.getElementById('valor-gasto');
@@ -445,15 +393,16 @@ document.addEventListener('DOMContentLoaded', () => {
       gastos.unshift(novoGasto);
       salvarCacheLocal();
       renderizarHistorico();
-
       descricaoInput.value = '';
       valorGastoInput.value = '';
 
       if (typeof firebase !== 'undefined' && firebase.firestore && usuarioId && !usuarioId.startsWith('local')) {
         try {
-          firebase.firestore().collection('users').doc(usuarioId).collection('gastos').doc(novoGasto.id).set(novoGasto);
+          await firebase.firestore().collection('users').doc(usuarioId).collection('gastos').doc(novoGasto.id).set(novoGasto);
+          console.log("Gasto salvo na nuvem com sucesso!");
         } catch (err) {
-          console.warn('Aviso ao sincronizar no Firestore:', err);
+          console.error("ERRO AO SALVAR NA NUVEM:", err);
+          alert("Atenção: Salvo no celular, mas erro ao enviar para nuvem. Erro: " + err.message);
         }
       }
     });
